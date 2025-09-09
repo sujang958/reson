@@ -44,7 +44,7 @@ function RouteComponent() {
       </section>
 
       <section className="flex flex-wrap flex-row items-start justify-between gap-12 mt-8">
-        <aside className="shrink">
+        <aside className="shrink rounded-lg p-2 bg-black">
           <LiteYoutubeEmbed
             id="xvFZjo5PgG0"
             title="d"
