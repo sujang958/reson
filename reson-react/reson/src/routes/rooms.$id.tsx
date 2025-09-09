@@ -11,11 +11,25 @@ export const Route = createFileRoute("/rooms/$id")({
 
 function RouteComponent() {
   const { id } = Route.useParams()
-  const ytRef = useRef(null)
+  const ytRef = useRef<HTMLIFrameElement>(null)
   const ytCtrl = useRef<YouTubeIFrameCtrl>(null)
 
   useEffect(() => {
     ytCtrl.current = ytRef.current ? new YouTubeIFrameCtrl(ytRef.current) : null
+
+    let a = setTimeout(() => {
+      console.log("hello", ytRef.current?.contentWindow)
+      ytRef.current?.contentWindow?.postMessage(
+        JSON.stringify({
+          event: "command",
+          func: "loadVideoById",
+          args: ["jNQXAC9IVRw", 0], // it fucking worked
+        }),
+        "*"
+      )
+    }, 8000)
+
+    return () => clearTimeout(a)
   }, [ytRef])
 
   return (
@@ -38,7 +52,7 @@ function RouteComponent() {
             autoplay
             muted
           />
-          <div className="flex flex-row items-center mt-2">
+          <div className="flex flex-row items-center mt-3">
             <Button>
               <Volume2 size={16} />
               Unmute
