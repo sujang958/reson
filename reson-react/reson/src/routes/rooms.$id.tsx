@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useEffect, useRef } from "react"
 import LiteYoutubeEmbed from "react-lite-youtube-embed"
 import YouTubeIFrameCtrl from "youtube-iframe-ctrl"
+import Button from "../components/Button"
+import { Volume2 } from "lucide-react"
 
 export const Route = createFileRoute("/rooms/$id")({
   component: RouteComponent,
@@ -36,10 +38,11 @@ function RouteComponent() {
             autoplay
             muted
           />
-          <div className="flex flex-row items-center">
-            <button type="button" onClick={() => ytCtrl?.current?.pause()}>
-              Pause
-            </button>
+          <div className="flex flex-row items-center mt-2">
+            <Button>
+              <Volume2 size={16} />
+              Unmute
+            </Button>
           </div>
         </aside>
         <main></main>

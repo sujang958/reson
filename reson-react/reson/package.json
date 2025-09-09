@@ -16,9 +16,11 @@
     "@tanstack/react-router": "^1.131.31",
     "@tanstack/react-router-devtools": "^1.131.31",
     "jazz-tools": "^0.18.3",
+    "lucide-react": "^0.542.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-lite-youtube-embed": "^2.5.6",
+    "tailwind-merge": "^3.3.1",
     "youtube-iframe-ctrl": "^1.0.3"
   },
   "devDependencies": {
