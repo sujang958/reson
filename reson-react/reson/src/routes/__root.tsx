@@ -9,7 +9,7 @@ const RootLayout = () => (
       </Link>
     </header>
 
-    <main className="max-w-2xl w-full self-center p-16">
+    <main className="max-w-7xl w-full self-center p-16 flex flex-col">
       <Outlet />
     </main>
 

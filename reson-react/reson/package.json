@@ -17,7 +17,9 @@
     "@tanstack/react-router-devtools": "^1.131.31",
     "jazz-tools": "^0.18.3",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-lite-youtube-embed": "^2.5.6",
+    "youtube-iframe-ctrl": "^1.0.3"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.3",

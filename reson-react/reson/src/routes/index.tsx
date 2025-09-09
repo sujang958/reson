@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <div className="">
+    <div className="max-w-xl w-full self-center">
       <section>
         <p className="text-3xl font-semibold">Reson</p>
         <p className="text-lg text-neutral-600 mt-2 text-wrap max-w-sm">
