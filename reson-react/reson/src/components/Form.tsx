@@ -10,7 +10,7 @@ export function Form() {
   if (!me) return null
 
   return (
-    <div className="flex flex-col gap-4 border p-8 border-stone-200 rounded-lg">
+    <div className="flex flex-col gap-4 border p-8 border-stone-700 rounded-lg">
       <div className="flex flex-col items-center gap-3">
         <label className="flex flex-col gap-y-2 w-full">
           Nickname
@@ -19,7 +19,7 @@ export function Form() {
               type="text"
               id="nickname"
               placeholder="Enter your nickname here..."
-              className="border border-stone-300 rounded-lg shadow-xs py-1 px-2 flex-1"
+              className="border border-stone-700 rounded-lg shadow-xs py-1 px-2 flex-1"
               value={me.profile.nickname || ""}
               onChange={(e) => me.profile.$jazz.set("nickname", e.target.value)}
             />

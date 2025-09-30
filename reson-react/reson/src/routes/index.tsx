@@ -10,7 +10,7 @@ function Index() {
     <div className="max-w-xl w-full self-center">
       <section>
         <p className="text-3xl font-semibold">Reson</p>
-        <p className="text-lg text-neutral-600 mt-2 text-wrap max-w-sm">
+        <p className="text-lg text-neutral-400 mt-2 text-wrap max-w-sm">
           Watch together. It's like Spotify's Jam or Discord's watch together
           but it is on web.
         </p>
