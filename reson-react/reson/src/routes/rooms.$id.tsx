@@ -2,10 +2,8 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useEffect, useRef } from "react"
 import LiteYoutubeEmbed from "react-lite-youtube-embed"
 import YouTubeIFrameCtrl from "youtube-iframe-ctrl"
-import Button from "../components/Button"
-import { SkipForward, Volume2 } from "lucide-react"
-import QueueItem from "../components/QueueItem"
 import Queue from "../components/Queue"
+import Search from "../components/Search"
 
 export const Route = createFileRoute("/rooms/$id")({
   component: RouteComponent,
@@ -45,7 +43,7 @@ function RouteComponent() {
       </section>
 
       <section className="flex flex-wrap flex-row items-start justify-between gap-12 mt-6">
-        <aside className="shrink rounded-lg p-2 h-full">
+        <aside className="shrink rounded-lg h-full">
           <div className="bg-black rounded-lg px-2 pt-0 pb-3">
             <LiteYoutubeEmbed
               id="xvFZjo5PgG0"
@@ -75,7 +73,7 @@ function RouteComponent() {
           </div>
           <Queue />
         </aside>
-        <main>asdf</main>
+        <Search />
       </section>
     </>
   )
