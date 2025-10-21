@@ -19,7 +19,7 @@ type VideoItem = {
   }
 }
 
-const Search: FC = () => {
+const Search: FC<{ onSelect: (video: VideoItem) => any }> = ({ onSelect }) => {
   const [results, setResults] = useState<VideoItem[] | "LOADING">([])
   const loadVideos = debounce(async (q: string) => {
     console.log(q, encodeURIComponent(q))
@@ -64,6 +64,9 @@ const Search: FC = () => {
             <div
               id={video.id.videoId}
               className="flex flex-row items-center py-1 cursor-pointer rounded-lg hover:opacity-75 gap-x-3"
+              onClick={() => {
+                onSelect(video)
+              }}
             >
               <aside className="w-32 h-24 overflow-hidden flex flex-col items-center justify-center">
                 <img

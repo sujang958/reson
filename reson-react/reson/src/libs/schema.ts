@@ -14,7 +14,7 @@ export const JazzProfile = co.profile({
 /** The account root is an app-specific per-user private `CoMap`
  *  where you can store top-level objects for that user */
 export const AccountRoot = co.map({
-  hi: z.string(),
+  privateNickName: z.string()
 })
 
 export const JazzAccount = co
@@ -28,7 +28,7 @@ export const JazzAccount = co
      */
     if (!account.$jazz.has("root")) {
       account.$jazz.set("root", {
-        hi: "hello :3",
+        privateNickName: "hello :3",
       })
     }
 
@@ -40,7 +40,7 @@ export const JazzAccount = co
         "profile",
         JazzProfile.create(
           {
-            name: "Anonymous user",
+            name: "Anonymous user", // TODO: fix this
             nickname: "MellowOrange443",
           },
           group
@@ -48,3 +48,8 @@ export const JazzAccount = co
       )
     }
   })
+
+export const WatchParty = co.map({
+  title: co.plainText(),
+  items: co.list(co.map({ id: co.plainText(), json: co.plainText() }))
+})

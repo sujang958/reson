@@ -4,32 +4,42 @@ import LiteYoutubeEmbed from "react-lite-youtube-embed"
 import YouTubeIFrameCtrl from "youtube-iframe-ctrl"
 import Queue from "../components/Queue"
 import Search from "../components/Search"
+import { useAccount, useCoState } from "jazz-tools/react-core"
+import { WatchParty } from "../libs/schema"
 
 export const Route = createFileRoute("/rooms/$id")({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const { me } = useAccount()
   const { id } = Route.useParams()
   const ytRef = useRef<HTMLIFrameElement>(null)
   const ytCtrl = useRef<YouTubeIFrameCtrl>(null)
+  const party = useCoState(WatchParty, id)
+
+  // if (!party) return <div>loading</div>
+
+  const playVideo = (id: string) => {
+    ytRef.current?.contentWindow?.postMessage(
+      JSON.stringify({
+        event: "command",
+        func: "loadVideoById",
+        args: [id, 0], // it fucking worked
+      }),
+      "*"
+    )
+  }
 
   useEffect(() => {
+    const videoId = party?.items?.at(0)
+    if (!videoId) return
+    playVideo(videoId.id!.toString())
+  }, [party])
+
+  useEffect(() => {
+    console.log(me?.profile?.name, party?.title, id)
     ytCtrl.current = ytRef.current ? new YouTubeIFrameCtrl(ytRef.current) : null
-
-    let a = setTimeout(() => {
-      console.log("hello", ytRef.current?.contentWindow)
-      ytRef.current?.contentWindow?.postMessage(
-        JSON.stringify({
-          event: "command",
-          func: "loadVideoById",
-          args: ["jNQXAC9IVRw", 0], // it fucking worked
-        }),
-        "*"
-      )
-    }, 8000)
-
-    return () => clearTimeout(a)
   }, [ytRef])
 
   return (
@@ -73,7 +83,14 @@ function RouteComponent() {
           </div>
           <Queue />
         </aside>
-        <Search />
+        <Search
+          onSelect={(video) => {
+            party?.items?.$jazz.push({
+              id: video.id.videoId,
+              json: JSON.stringify(video),
+            })
+          }}
+        />
       </section>
     </>
   )
