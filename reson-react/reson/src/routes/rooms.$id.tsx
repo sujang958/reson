@@ -37,20 +37,27 @@ function RouteComponent() {
     playVideo(videoId.id!.toString())
   }, [party])
 
-  useEffect(() => {
-    setTimeout(() => console.log(ytCtrl.current?.playerState), 9000)
-    console.log(ytCtrl.current?.playerState)
-  }, [ytCtrl.current?.playerState])
+  // useEffect(() => {
+  //   setTimeout(() => console.log(ytCtrl.current?.playerState), 9000)
+  //   console.log("FUCK YOU", ytCtrl.current?.playerState)
+  // }, [ytCtrl.current?.playerState])
 
   useEffect(() => {
     console.log(me?.profile?.name, party?.title, id)
     ytCtrl.current = ytRef.current ? new YouTubeIFrameCtrl(ytRef.current) : null
     ytCtrl.current?.playerState // HOW TO GETTHIS SHIT BRUH
 
-    if (ytRef.current?.contentWindow)
+    if (ytRef.current?.contentWindow) {
+      ytRef.current.addEventListener("ytstatechange", (event) => {
+        console.log("kys", event) // IT FUCKING WORKED`
+      })
+      ytRef.current.contentWindow.addEventListener("ytstatechange", (event) => {
+        console.log("kys2", event)
+      })
       ytRef.current.contentWindow.onmessage = (event) => {
-        console.log(event)
+        console.log(event, "Why tf")
       }
+    }
   }, [ytRef])
 
   return (
@@ -72,6 +79,7 @@ function RouteComponent() {
               ref={ytRef}
               enableJsApi
               alwaysLoadIframe
+              noCookie
               autoplay
               muted
             />
