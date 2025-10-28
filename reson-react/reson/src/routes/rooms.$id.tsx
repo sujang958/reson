@@ -33,20 +33,28 @@ function RouteComponent() {
 
   useEffect(() => {
     const videoId = party?.items?.at(0)
-    if (!videoId) return
+    if (!videoId?.id) return
     playVideo(videoId.id!.toString())
   }, [party])
 
   useEffect(() => {
+    setTimeout(() => console.log(ytCtrl.current?.playerState), 9000)
+    console.log(ytCtrl.current?.playerState)
+  }, [ytCtrl.current?.playerState])
+
+  useEffect(() => {
     console.log(me?.profile?.name, party?.title, id)
     ytCtrl.current = ytRef.current ? new YouTubeIFrameCtrl(ytRef.current) : null
+    ytCtrl.current?.playerState // HOW TO GETTHIS SHIT BRUH
+
+    ytCtrl.current.
   }, [ytRef])
 
   return (
     <>
       <section>
         <p className="text-sm text-neutral-400 mt-2 text-wrap max-w-sm">{id}</p>
-        <p className="mt-1 text-3xl font-semibold">Watching something</p>
+        <p className="mt-1 text-3xl font-semibold">{party?.title}</p>
         {/* <p className="text-lg text-neutral-600 mt-3 text-wrap max-w-sm">
           lets watch together
         </p> */}
