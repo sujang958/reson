@@ -47,7 +47,10 @@ function RouteComponent() {
     ytCtrl.current = ytRef.current ? new YouTubeIFrameCtrl(ytRef.current) : null
     ytCtrl.current?.playerState // HOW TO GETTHIS SHIT BRUH
 
-    ytCtrl.current.
+    if (ytRef.current?.contentWindow)
+      ytRef.current.contentWindow.onmessage = (event) => {
+        console.log(event)
+      }
   }, [ytRef])
 
   return (
