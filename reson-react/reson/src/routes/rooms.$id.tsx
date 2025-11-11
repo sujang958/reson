@@ -1,11 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import LiteYoutubeEmbed from "react-lite-youtube-embed"
 import YouTubeIFrameCtrl from "youtube-iframe-ctrl"
 import Queue from "../components/Queue"
 import Search from "../components/Search"
 import { useAccount, useCoState } from "jazz-tools/react-core"
 import { WatchParty } from "../libs/schema"
+
+function debounce(func: any, timeout = 300) {
+  let timer: any
+  return (...args: any) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      func(...args)
+    }, timeout)
+  }
+}
 
 export const Route = createFileRoute("/rooms/$id")({
   component: RouteComponent,
@@ -37,6 +47,20 @@ function RouteComponent() {
     playVideo(videoId.id!.toString())
   }, [party])
 
+  useEffect(() => {
+    console.log(
+      "HEL",
+      party?.items?.map((v) => ({
+        id: v?.id?.toString(),
+        json: v?.json?.toString(),
+      }))
+    )
+  }, [party])
+
+  const shiftQueue = useCallback(() => {
+    console.log("Re", party?.items?.$jazz.shift())
+  }, [party]) // IT WORKED
+
   // useEffect(() => {
   //   setTimeout(() => console.log(ytCtrl.current?.playerState), 9000)
   //   console.log("FUCK YOU", ytCtrl.current?.playerState)
@@ -45,17 +69,23 @@ function RouteComponent() {
   useEffect(() => {
     console.log(me?.profile?.name, party?.title, id)
     ytCtrl.current = ytRef.current ? new YouTubeIFrameCtrl(ytRef.current) : null
-    ytCtrl.current?.playerState // HOW TO GETTHIS SHIT BRUH
+    // ytCtrl.current?.playerState // HOW TO GETTHIS SHIT BRUH
 
     if (ytRef.current?.contentWindow) {
-      const listener = async (event: any) => {
-        console.log("kys", event.detail) // IT FUCKING WORKED`
-      }
+      const listener = debounce(async (event: any) => {
+        console.log("HELLO?", event, event.detail)
+        if (event.detail !== "ENDED") return
+
+        shiftQueue()
+      })
       ytRef.current.addEventListener("ytstatechange", listener)
 
-      return () => {
-        ytRef.current?.removeEventListener("ytstatechange", listener)
-      }
+      // return () => {
+      //   ytRef.current?.removeEventListener(
+      //     "ytstatechange",
+      //     listener
+      //   )
+      // }
       // ytRef.current.contentWindow.addEventListener("ytstatechange", (event) => {
       //   console.log("kys2", event)
       // })
