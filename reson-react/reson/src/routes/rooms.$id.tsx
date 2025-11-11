@@ -48,15 +48,20 @@ function RouteComponent() {
     ytCtrl.current?.playerState // HOW TO GETTHIS SHIT BRUH
 
     if (ytRef.current?.contentWindow) {
-      ytRef.current.addEventListener("ytstatechange", (event) => {
-        console.log("kys", event) // IT FUCKING WORKED`
-      })
-      ytRef.current.contentWindow.addEventListener("ytstatechange", (event) => {
-        console.log("kys2", event)
-      })
-      ytRef.current.contentWindow.onmessage = (event) => {
-        console.log(event, "Why tf")
+      const listener = async (event: any) => {
+        console.log("kys", event.detail) // IT FUCKING WORKED`
       }
+      ytRef.current.addEventListener("ytstatechange", listener)
+
+      return () => {
+        ytRef.current?.removeEventListener("ytstatechange", listener)
+      }
+      // ytRef.current.contentWindow.addEventListener("ytstatechange", (event) => {
+      //   console.log("kys2", event)
+      // })
+      // ytRef.current.contentWindow.onmessage = (event) => {
+      //   console.log(event, "Why tf")
+      // }
     }
   }, [ytRef])
 
@@ -100,7 +105,12 @@ function RouteComponent() {
               </Button>
             </div> */}
           </div>
-          <Queue />
+
+          <Queue
+            items={
+              party?.items?.map((v) => ({ id: v?.id, json: v?.json })) ?? []
+            }
+          />
         </aside>
         <Search
           onSelect={(video) => {
