@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import LiteYoutubeEmbed from "react-lite-youtube-embed"
 import YouTubeIFrameCtrl from "youtube-iframe-ctrl"
 import Queue from "../components/Queue"
 import Search from "../components/Search"
 import { useAccount, useCoState } from "jazz-tools/react-core"
 import { WatchParty } from "../libs/schema"
+import { isControlledAccount } from "jazz-tools"
 
 function debounce(func: any, timeout = 300) {
   let timer: any
@@ -22,13 +23,94 @@ export const Route = createFileRoute("/rooms/$id")({
 })
 
 function RouteComponent() {
-  const { me } = useAccount()
+  const me = useAccount()
   const { id } = Route.useParams()
   const ytRef = useRef<HTMLIFrameElement>(null)
   const ytCtrl = useRef<YouTubeIFrameCtrl>(null)
-  const party = useCoState(WatchParty, id)
+  const party = useCoState(WatchParty, id, {
+    resolve: { items: { $each: true } },
+  })
 
-  // if (!party) return <div>loading</div>
+  const [playingState, setPlayingState] = useState<
+    "idk" | "UNSTARTED" | "CUED" | "PLAYING" | "BUFFERING" | "ENDED"
+  >("idk")
+  useEffect(() => {
+    console.log(playingState)
+  }, [playingState])
+
+  useEffect(() => {
+    // ytCtrl.current?.command()
+    if (
+      playingState !== "ENDED" &&
+      playingState !== "idk" &&
+      playingState !== "CUED"
+    )
+      return
+    if (!party.$isLoaded) return
+    const videoId = party?.items[0]
+    if (!videoId?.id) return
+    playVideo(videoId.id!.toString())
+  }, [party])
+
+  const shiftQueue = () => {
+    if (!me.$isLoaded || !party.$isLoaded) return
+
+    console.log(party, me?.profile)
+    if (!party || !me) return
+    // isControlledAccount()
+    if (!me.canAdmin(party)) return
+
+    console.log("Removed", party.items?.$jazz.remove(0))
+  }
+
+  useEffect(() => {
+    if (!party.$isLoaded) return
+    console.log(me, party?.title, id)
+    ytCtrl.current = ytRef.current ? new YouTubeIFrameCtrl(ytRef.current) : null
+
+    if (ytRef.current?.contentWindow) {
+      const listener = debounce(async (event: any) => {
+        setPlayingState(event.detail)
+        //  console.log("HELLO?", event, event.detail)
+        if (event.detail !== "ENDED") return
+
+        shiftQueue()
+      })
+      ytRef.current.addEventListener("ytstatechange", listener)
+
+      return () => {
+        ytRef.current?.removeEventListener("ytstatechange", listener)
+      }
+
+      // ytRef.current.contentWindow.onmessage = (event) => {
+      //   console.log(event, "Why tf")
+      // }
+    }
+  }, [ytRef, party])
+
+  // useEffect(() => {
+  //   console.log("HEL", normalizedItems)
+  // }, [normalizedItems])
+
+  if (!me.$isLoaded) {
+    return "Loading..."
+  }
+
+  if (!party.$isLoaded) {
+    switch (party.$jazz.loadingState) {
+      case "unauthorized":
+        return "Project not accessible"
+      case "unavailable":
+        return "Project not found"
+      case "loading":
+        return "Loading project..."
+    }
+  }
+
+  const normalizedItems = party?.items?.map((v) => ({
+    id: v?.id?.toString(),
+    json: v?.json?.toString(),
+  }))
 
   const playVideo = (id: string) => {
     ytRef.current?.contentWindow?.postMessage(
@@ -41,65 +123,13 @@ function RouteComponent() {
     )
   }
 
-  useEffect(() => {
-    const videoId = party?.items?.at(0)
-    if (!videoId?.id) return
-    playVideo(videoId.id!.toString())
-  }, [party])
-
-  useEffect(() => {
-    console.log(
-      "HEL",
-      party?.items?.map((v) => ({
-        id: v?.id?.toString(),
-        json: v?.json?.toString(),
-      }))
-    )
-  }, [party])
-
-  const shiftQueue = useCallback(() => {
-    console.log("Re", party?.items?.$jazz.shift())
-  }, [party]) // IT WORKED
-
-  // useEffect(() => {
-  //   setTimeout(() => console.log(ytCtrl.current?.playerState), 9000)
-  //   console.log("FUCK YOU", ytCtrl.current?.playerState)
-  // }, [ytCtrl.current?.playerState])
-
-  useEffect(() => {
-    console.log(me?.profile?.name, party?.title, id)
-    ytCtrl.current = ytRef.current ? new YouTubeIFrameCtrl(ytRef.current) : null
-    // ytCtrl.current?.playerState // HOW TO GETTHIS SHIT BRUH
-
-    if (ytRef.current?.contentWindow) {
-      const listener = debounce(async (event: any) => {
-        console.log("HELLO?", event, event.detail)
-        if (event.detail !== "ENDED") return
-
-        shiftQueue()
-      })
-      ytRef.current.addEventListener("ytstatechange", listener)
-
-      // return () => {
-      //   ytRef.current?.removeEventListener(
-      //     "ytstatechange",
-      //     listener
-      //   )
-      // }
-      // ytRef.current.contentWindow.addEventListener("ytstatechange", (event) => {
-      //   console.log("kys2", event)
-      // })
-      // ytRef.current.contentWindow.onmessage = (event) => {
-      //   console.log(event, "Why tf")
-      // }
-    }
-  }, [ytRef])
+  // TODO: seperate adder and remover (Only one)
 
   return (
     <>
       <section>
         <p className="text-sm text-neutral-400 mt-2 text-wrap max-w-sm">{id}</p>
-        <p className="mt-1 text-3xl font-semibold">{party?.title}</p>
+        <p className="mt-1 text-3xl font-semibold">{party?.title.toString()}</p>
         {/* <p className="text-lg text-neutral-600 mt-3 text-wrap max-w-sm">
           lets watch together
         </p> */}
@@ -109,12 +139,13 @@ function RouteComponent() {
         <aside className="shrink rounded-lg h-full">
           <div className="bg-black rounded-lg px-2 pt-0 pb-3">
             <LiteYoutubeEmbed
-              id="xvFZjo5PgG0"
+              id=""
               title="d"
               ref={ytRef}
               enableJsApi
               alwaysLoadIframe
-              noCookie
+              // noCookie
+
               autoplay
               muted
             />

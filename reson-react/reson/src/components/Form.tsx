@@ -6,14 +6,18 @@ import Button from "./Button"
 
 export function Form() {
   const navigate = useNavigate()
-  const { me } = useAccount(JazzAccount, {
+  const me = useAccount(JazzAccount, {
     resolve: { profile: true, root: true },
   })
+
+  if (!me.$isLoaded) {
+    return "Loading..."
+  }
 
   const createRoom = () => {
     console.log("HI ")
     const group = Group.create()
-    group.makePublic("reader")
+    group.makePublic("writer")
     const party = WatchParty.create({ title: "title", items: [] }, group)
     console.log(party)
     navigate({ to: `/rooms/$id`, params: { id: party.$jazz.id } })

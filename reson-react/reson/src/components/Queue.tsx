@@ -21,10 +21,10 @@ const Queue: FC<{ items: any[] }> = ({ items }) => {
             <div id={item.id} className="flex flex-row items-center">
               <div className="flex flex-col">
                 <p className="text-base text-white">
-                  {item.json.snippet.title}
+                  {item?.json?.snippet?.title}
                 </p>
                 <p className="text-sm text-neutral-400 mt-0.5">
-                  {item.json.snippet.channelTitle}
+                  {item?.json?.snippet?.channelTitle}
                 </p>
               </div>
             </div>

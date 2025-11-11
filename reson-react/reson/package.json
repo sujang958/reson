@@ -15,7 +15,7 @@
   "dependencies": {
     "@tanstack/react-router": "^1.131.31",
     "@tanstack/react-router-devtools": "^1.131.31",
-    "jazz-tools": "^0.18.3",
+    "jazz-tools": "^0.19.1",
     "ky": "^1.12.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.542.0",
